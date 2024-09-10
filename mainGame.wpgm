@@ -1,0 +1,47 @@
+import wollok.game.*
+import elementos.*
+
+program moverseJuego {
+    game.title("Moverse")
+    game.height(20)
+    game.width(30)
+    game.cellSize(50)
+    game.boardGround("fondo.png")
+    
+    // Visual
+    game.addVisual(nave)
+    
+    // Movimiento nave
+    keyboard.left().onPressDo({
+        nave.position(nave.position().left(1))
+    })
+    
+    keyboard.right().onPressDo({
+        nave.position(nave.position().right(1))
+    })
+    
+    const listaMeteoritos = []
+
+    // Caida meteorito
+    game.onTick(100, "Caida Meteorito", { //Agregar dificultad gotas que caen más rapido
+        listaMeteoritos.map({meteorito => 
+            if (meteorito.position().y()==0)
+            {
+                game.removeVisual(meteorito)
+                listaMeteoritos.remove(meteorito)
+            }
+            meteorito.position(meteorito.position().down(1))})
+    })
+
+    game.onTick(300,"Crear Meteorito", {
+        const elem = new Meteorito()
+        game.addVisual(elem)
+        listaMeteoritos.add(elem)
+    })
+
+    game.onCollideDo(nave, {elemento =>
+        game.stop()
+    })
+
+    game.start()
+}
