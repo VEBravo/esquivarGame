@@ -3,9 +3,9 @@ import elementos.*
 
 program moverseJuego {
     game.title("Moverse")
-    game.height(20)
-    game.width(30)
-    game.cellSize(50)
+    game.height(altoDelJuego)
+    game.width(anchoDelJuego)
+    game.cellSize(tamanioCelda)
     game.boardGround("fondo.png")
     
     // Visual
