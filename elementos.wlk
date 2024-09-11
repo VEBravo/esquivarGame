@@ -78,7 +78,7 @@ object nave {
     }
     
     method recibirVentaja(objeto) {
-        if (objeto.ventaja()=="Vida extra"){
+        if (objeto.ventaja()=="Vida extra" && vidas < 3){
             vidas += 1
         }
     } 
