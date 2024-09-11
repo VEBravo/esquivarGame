@@ -10,6 +10,7 @@ program moverseJuego {
     
     // Visual
     game.addVisual(nave)
+    game.addVisual(puntaje)
     
     // Movimiento nave
     keyboard.left().onPressDo({
@@ -23,7 +24,7 @@ program moverseJuego {
     const listaMeteoritos = []
 
     // Caida meteorito
-    game.onTick(100, "Caida Meteorito", { //Agregar dificultad gotas que caen más rapido
+    game.onTick(100, "Caida Meteorito", { //Agregar dificultad meteoritos que caen más rapido
         listaMeteoritos.map({meteorito => 
             if (meteorito.position().y()==0)
             {
@@ -33,14 +34,51 @@ program moverseJuego {
             meteorito.position(meteorito.position().down(1))})
     })
 
+    game.onTick(5000, "Dropear Medikit",{
+        const medikit = new Medikit()
+        game.addVisual(medikit)
+        listaMeteoritos.add(medikit)
+            game.onTick(500, "Caida Medikit",{
+                medikit.position(medikit.position().down(1))
+                if (medikit.position().y()==0)
+                {
+                    game.removeVisual(medikit)
+                    listaMeteoritos.remove(medikit)
+                }
+            })
+    })
+
     game.onTick(300,"Crear Meteorito", {
         const elem = new Meteorito()
         game.addVisual(elem)
         listaMeteoritos.add(elem)
     })
 
+    // Impactos
     game.onCollideDo(nave, {elemento =>
-        game.stop()
+        game.removeVisual(elemento)
+        
+        if (elemento.otorgaVentaja())
+        {
+            nave.recibirVentaja(elemento)
+        }
+
+        else
+        {
+            nave.perderVida()
+            game.say(nave,"Cuidado")
+            puntaje.restarPuntos()
+        }
+
+        if (nave.estaMuerto())
+        {
+            game.stop()
+        }
+    }) 
+
+    // Contador
+    game.onTick(500,"Sumar puntaje", {
+        puntaje.sumarPuntos()
     })
 
     game.start()
