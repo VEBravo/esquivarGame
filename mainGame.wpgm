@@ -25,37 +25,53 @@ program moverseJuego {
         }
     })
     
-    const listaMeteoritos = []
+    
 
-    // Caida meteorito
-    game.onTick(100, "Caida Meteorito", { //Agregar dificultad meteoritos que caen más rapido
-        listaMeteoritos.map({meteorito => 
-            if (meteorito.position().y()==0)
-            {
-                game.removeVisual(meteorito)
-                listaMeteoritos.remove(meteorito)
-            }
-            meteorito.position(meteorito.position().down(1))})
-    })
+    // Meteoritos
+    // var cantMeteoritos = 0
+    // game.onTick(100, "Caida Meteorito", { //Agregar dificultad meteoritos que caen más rapido
+    //     if (cantMeteoritos < maxMeteoritos)
+    //     {
+    //         const meteorito = new Meteorito()
+    //         game.addVisual(meteorito)
+    //             game.onTick(500, "Caida Medikit",{
+    //                 medikit.position(medikit.position().down(1))
+    //                 if (medikit.position().y()==0)
+    //                 {
+    //                     game.removeVisual(medikit)
+    //                     //aca
+    //                 }
+    //         })
+    //     }
+
+    //     //CODIGO ANTERIOR
+    //     listaMeteoritos.map({meteorito => 
+    //         if (meteorito.position().y()==0)
+    //         {
+    //             game.removeVisual(meteorito)
+    //             listaMeteoritos.remove(meteorito)
+    //         }
+    //         meteorito.position(meteorito.position().down(1))})
+    // })
+
+    // game.onTick(300,"Crear Meteorito", {
+    //     const elem = new Meteorito()
+    //     game.addVisual(elem)
+    //     listaMeteoritos.add(elem)
+    // })
+
 
     game.onTick(5000, "Dropear Medikit",{
-        const medikit = new Medikit()
         game.addVisual(medikit)
-        listaMeteoritos.add(medikit)
-            game.onTick(500, "Caida Medikit",{
-                medikit.position(medikit.position().down(1))
-                if (medikit.position().y()==0)
+        medikit.posicionarRandom()
+        game.onTick(500, "Caida Medikit",{
+            medikit.position(medikit.position().down(1))
+                if (medikit.position().y()==5)
                 {
-                    game.removeVisual(medikit)
-                    listaMeteoritos.remove(medikit)
+                    //game.removeVisual(medikit)
+                    game.removeTickEvent(self)
                 }
-            })
-    })
-
-    game.onTick(300,"Crear Meteorito", {
-        const elem = new Meteorito()
-        game.addVisual(elem)
-        listaMeteoritos.add(elem)
+        })
     })
 
     // Impactos

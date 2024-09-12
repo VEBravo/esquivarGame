@@ -1,6 +1,7 @@
 const anchoDelJuego = 30
 const altoDelJuego = 20
 const tamanioCelda = 50
+const maxMeteoritos = 10
 
 class Meteorito {
     var position = game.at(1.randomUpTo(anchoDelJuego-1),15.randomUpTo(altoDelJuego-1))
@@ -41,13 +42,16 @@ object puntaje {
     }
 }
 
-class Medikit {
-    var position = game.at(1.randomUpTo(anchoDelJuego-1),15.randomUpTo(altoDelJuego-1))
+object medikit {
+    var position = game.at(1,1)
     
     // GAME
     method position() = position
     method position(newPos) {
         position = newPos
+    }
+    method posicionarRandom() {
+        position = game.at(1.randomUpTo(anchoDelJuego-1),15.randomUpTo(altoDelJuego-1))
     }
 
     method otorgaVentaja() = true
