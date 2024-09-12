@@ -1,6 +1,7 @@
 const anchoDelJuego = 30
 const altoDelJuego = 20
 const tamanioCelda = 50
+const maxMeteoritos = 2
 
 class Meteorito {
     var position = game.at(1.randomUpTo(anchoDelJuego-1),15.randomUpTo(altoDelJuego-1))
@@ -10,8 +11,9 @@ class Meteorito {
     method position(newPos) {
         position = newPos
     }
-    method otorgaVentaja() = false // false para los objetos "malos" (colisiones), true para los "buenos", 
-                                   // luego nave.recibirVentaja(objetoBueno.ventaja()) para los buenos
+    method efecto() = "Danio"
+    method esBeneficio() = false
+    method posicionSpawn() {position = game.at(1.randomUpTo(anchoDelJuego-1),15.randomUpTo(altoDelJuego-1))} 
     method image() = "meteorito.png"
 }
 object puntaje {
@@ -41,17 +43,18 @@ object puntaje {
     }
 }
 
-class Medikit {
-    var position = game.at(1.randomUpTo(anchoDelJuego-1),15.randomUpTo(altoDelJuego-1))
+object medikit {
+    var position = game.at(2,altoDelJuego)
     
     // GAME
+    method esBeneficio() = true
     method position() = position
     method position(newPos) {
         position = newPos
     }
+    method posicionSpawn() {position = game.at(1.randomUpTo(anchoDelJuego-1),15.randomUpTo(altoDelJuego-1))} 
 
-    method otorgaVentaja() = true
-    method ventaja() = "Vida extra"
+    method efecto() = "Vida extra"
     method image() = "medikit.png"
 }
 
@@ -73,15 +76,29 @@ object nave {
 
     method textColor() = "FF0000"
 
+    method estaVivo() = vidas > 0
+    
     method perderVida() {
         vidas -= 1
     }
+    method ganarVida() {
+        vidas += 1
+    }
+    method morir() {
+        vidas = 0
+    }
     
-    method recibirVentaja(objeto) {
-        if (objeto.ventaja()=="Vida extra"){
-            vidas += 1
+    method serAfectado(efecto) {
+        if (efecto=="Vida extra" && vidas < 3){
+            self.ganarVida()
         }
-    } 
+        else if (efecto=="Danio" && vidas > 0){
+            self.perderVida()
+        }
+        else if (efecto=="Muerte"){
+            self.morir()
+        }
+    }
 
     method estaMuerto() = vidas == 0
 
@@ -94,8 +111,38 @@ object nave {
     }
 
     method image() = "nave.png"
+}
 
-    // method danio(){
-    //     vidas -= 1
-    // }
+object bala {
+    var position = game.at(2,altoDelJuego)
+    var cargada = true
+
+    // GAME
+    method position() = position
+    method position(newPos) {
+        position = newPos
+    }
+    
+    method cargada() = cargada
+    method cargada(estaCargada) {cargada = estaCargada} 
+
+    method image() = "bala.png"
+}
+
+object cohete {
+    var position = game.at(1.randomUpTo(anchoDelJuego-1),15.randomUpTo(altoDelJuego-1))
+
+    // BASICO
+    method image() = "cohete.png"
+
+    method position() = position
+    method position(newPosition) {
+      position = newPosition
+    }
+    method esBeneficio() = false
+    method efecto() = "Muerte"
+
+    method posicion(x,y){            //Para poder pasar la posicicion con dos parametros
+        position = game.at(x,y)
+    }
 }

@@ -7,11 +7,26 @@ program moverseJuego {
     game.width(anchoDelJuego)
     game.cellSize(tamanioCelda)
     game.boardGround("fondo.png")
-    
+
     // Visual
     game.addVisual(nave)
     game.addVisual(puntaje)
-    
+    game.addVisual(cohete)
+    game.addVisual(medikit)
+    game.addVisual(bala)
+
+    // Caida cohete
+    game.onTick(50, "Caida cohete", {
+        if(cohete.position().y() < -2)   //Lo mueve denuevo a una posicion random, con == no funciona
+        {
+            cohete.posicion(1.randomUpTo(anchoDelJuego-1),15.randomUpTo(altoDelJuego-1))
+        }
+        else
+        {
+            cohete.position(cohete.position().down(1))
+        }
+    })
+
     // Movimiento nave
     keyboard.left().onPressDo({
         nave.position(nave.position().left(1))
@@ -20,65 +35,86 @@ program moverseJuego {
     keyboard.right().onPressDo({
         nave.position(nave.position().right(1))
     })
-    
-    const listaMeteoritos = []
 
-    // Caida meteorito
-    game.onTick(100, "Caida Meteorito", { //Agregar dificultad meteoritos que caen más rapido
-        listaMeteoritos.map({meteorito => 
-            if (meteorito.position().y()==0)
-            {
-                game.removeVisual(meteorito)
-                listaMeteoritos.remove(meteorito)
-            }
-            meteorito.position(meteorito.position().down(1))})
+    // Disparar
+    keyboard.space().onPressDo({
+        if (bala.cargada())
+        {
+            bala.cargada(false)
+            game.schedule(5000, {bala.cargada(true)})
+            bala.position(nave.position().up(1))
+            game.onTick(50, "Movimiento Disparo", { 
+                if (bala.position().y()>altoDelJuego)
+                {
+                    game.removeTickEvent("Movimiento Disparo")
+                }
+                else
+                    bala.position(bala.position().up(1))
+            })
+        }
+        else
+            game.say(nave, "Cooldown")
     })
 
-    game.onTick(5000, "Dropear Medikit",{
-        const medikit = new Medikit()
-        game.addVisual(medikit)
-        listaMeteoritos.add(medikit)
-            game.onTick(500, "Caida Medikit",{
-                medikit.position(medikit.position().down(1))
-                if (medikit.position().y()==0)
+    // Colisiones bala
+    game.onCollideDo(bala, {elemento =>
+        if (not elemento.esBeneficio())
+        {
+            elemento.position(game.at(0,-1))
+            bala.position(game.at(0,altoDelJuego+1))
+        }
+    })
+    
+    var contador = 0
+
+    // Caida meteorito
+    game.onTick(100,"Crear Meteorito", {
+        if (contador < maxMeteoritos)
+        {
+            const meteorito = new Meteorito()
+            game.addVisual(meteorito)
+            contador += 1
+            game.onTick(100, "Caida Meteorito", {
+                if (meteorito.position().y()<0)
                 {
-                    game.removeVisual(medikit)
-                    listaMeteoritos.remove(medikit)
+                    meteorito.posicionSpawn()
+                }
+                else
+                    meteorito.position(meteorito.position().down(1))
+            })
+        }
+    })
+
+    
+    // Medikit
+    game.onTick(5000, "Dropear Medikit",{
+        medikit.posicionSpawn()
+            game.onTick(200, "Caida Medikit",{
+                medikit.position(medikit.position().down(1))
+                if (medikit.position().y() < -1)
+                {
+                    game.removeTickEvent("Caida Medikit")
                 }
             })
     })
 
-    game.onTick(300,"Crear Meteorito", {
-        const elem = new Meteorito()
-        game.addVisual(elem)
-        listaMeteoritos.add(elem)
-    })
-
     // Impactos
     game.onCollideDo(nave, {elemento =>
-        game.removeVisual(elemento)
-        
-        if (elemento.otorgaVentaja())
-        {
-            nave.recibirVentaja(elemento)
-        }
-
-        else
-        {
-            nave.perderVida()
-            game.say(nave,"Cuidado")
-            puntaje.restarPuntos()
-        }
-
-        if (nave.estaMuerto())
-        {
-            game.stop()
-        }
+        nave.serAfectado(elemento.efecto())
+        elemento.position(game.at(0,-1))
     }) 
 
     // Contador
     game.onTick(500,"Sumar puntaje", {
         puntaje.sumarPuntos()
+    })
+
+    // Checkear Muerte
+    game.onTick(200,"Sumar puntaje", {
+        if (not nave.estaVivo())
+        {
+            game.stop()
+        }
     })
 
     game.start()
