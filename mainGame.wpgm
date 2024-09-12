@@ -29,15 +29,11 @@ program moverseJuego {
 
     // Movimiento nave
     keyboard.left().onPressDo({
-        if(nave.position().x()!=0) {
         nave.position(nave.position().left(1))
-        }
     })
     
     keyboard.right().onPressDo({
-        if(nave.position().x()!=30) {
         nave.position(nave.position().right(1))
-        }
     })
 
     // Disparar
@@ -99,7 +95,7 @@ program moverseJuego {
                 {
                     game.removeTickEvent("Caida Medikit")
                 }
-        })
+            })
     })
 
     // Impactos
