@@ -6,7 +6,7 @@ program moverseJuego {
     game.height(altoDelJuego)
     game.width(anchoDelJuego)
     game.cellSize(tamanioCelda)
-    game.boardGround("fondo.png")
+    game.boardGround("fondo.gif")
 
     // Visual
     game.addVisual(nave)
@@ -14,6 +14,11 @@ program moverseJuego {
     game.addVisual(cohete)
     game.addVisual(medikit)
     game.addVisual(bala)
+
+    game.sound("soundtrack.mp3").volume(0.2)
+    game.sound("soundtrack.mp3").play()
+    game.sound("soundtrack.mp3").shouldLoop(true)
+    
 
     // Caida cohete
     game.onTick(50, "Caida cohete", {
@@ -43,6 +48,8 @@ program moverseJuego {
             bala.cargada(false)
             game.schedule(5000, {bala.cargada(true)})
             bala.position(nave.position().up(1))
+            game.sound("bala.mp3").volume(0.1)
+            game.sound("bala.mp3").play()
             game.onTick(50, "Movimiento Disparo", { 
                 if (bala.position().y()>altoDelJuego)
                 {
@@ -101,6 +108,14 @@ program moverseJuego {
     // Impactos
     game.onCollideDo(nave, {elemento =>
         nave.serAfectado(elemento.efecto())
+        if (elemento.esBeneficio()){
+            game.sound("curacion.mp3").volume(0.1)
+            game.sound("curacion.mp3").play()
+        }
+        else{
+            game.sound("impacto.mp3").volume(0.1)
+            game.sound("impacto.mp3").play()
+        }
         elemento.position(game.at(0,-1))
     }) 
 
@@ -114,6 +129,8 @@ program moverseJuego {
         if (not nave.estaVivo())
         {
             game.stop()
+            game.sound("soundtrack.mp3").stop()
+            game.sound("perder.mp3").play()
         }
     })
 

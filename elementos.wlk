@@ -1,7 +1,7 @@
 const anchoDelJuego = 30
 const altoDelJuego = 20
 const tamanioCelda = 50
-const maxMeteoritos = 2
+const maxMeteoritos = 18
 
 class Meteorito {
     var position = game.at(1.randomUpTo(anchoDelJuego-1),15.randomUpTo(altoDelJuego-1))
