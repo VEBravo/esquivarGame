@@ -129,8 +129,8 @@ program moverseJuego {
         if (not nave.estaVivo())
         {
             game.stop()
-            game.sound("soundtrack.mp3").stop()
-            game.sound("perder.mp3").play()
+            // game.sound("soundtrack.mp3").stop()
+            // game.sound("perder.mp3").play()
         }
     })
 
